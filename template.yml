@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+    CreateLambdaFunction:
+        Type: AWS::Lambda::Function
+        Properties:
+            FunctionName: helloworld
+            Handler: index.handler
+            Role: arn:aws:iam::319133860807:role/LambdaRole
+            Runtime: nodejs12.x
+            Timeout: 10
+            Code:
+                S3Bucket: codebuild-sample-input
+                S3Key: helloworld/deploy/lambda.zip
+                Tags:
+                -
+                    Key: Admin
+                    Value: rimei.bai

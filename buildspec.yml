@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+    install:
+        commands:
+        - npm install
+    pre_build:
+        commands:
+        - npm test
+    build:
+        commands:
+        - zip lambda.zip *.js *.json -r node_modules -q
+    post_build:
+        commands:
+        - aws s3 cp lambda.zip s3://codebuild-sample-input/helloworld/deploy/
+        - aws s3 cp template.yml s3://codebuild-sample-input/helloworld/template/
+        - aws s3 ls s3://codebuild-sample-input/helloworld/template/
+        - aws cloudformation delete-stack --stack-name LambdaDeployTestSec
+        - aws cloudformation wait stack-delete-complete --stack-name LambdaDeployTestSec
+        - aws cloudformation create-stack --stack-name LambdaDeployTestSec --template-url https://s3-ap-northeast-1.amazonaws.com/codebuild-sample-input/helloworld/template/template.yml --tags Key=Admin,Value=rimei.bai --region ap-northeast-1
+        - aws cloudformation wait stack-create-complete --stack-name LambdaDeployTestSec
+        - aws cloudformation describe-stacks --stack-name LambdaDeployTestSec
